@@ -1,0 +1,75 @@
+{
+	"compilerOptions": {
+		/* Projets et chemins */
+		"rootDir": ".",
+		"outDir": "./dist",
+		"baseUrl": "./",
+		"paths": {
+			"@/*": ["src/*"],
+			"@/types/*": ["src/types/*"],
+			"@/utils/*": ["src/utils/*"],
+			"@/modules/*": ["src/modules/*"],
+			"@/decorators/*": ["lib/decorators/*"]
+		},
+
+		"target": "ES2022",
+		"module": "NodeNext",
+		"moduleResolution": "NodeNext",
+		"lib": ["ES2022"],
+		"types": ["node"],
+		"allowSyntheticDefaultImports": true,
+		"esModuleInterop": true,
+		"forceConsistentCasingInFileNames": true,
+
+		"sourceMap": true,
+		"declaration": true,
+		"declarationMap": true,
+		"removeComments": false,
+		"newLine": "lf",
+
+		"strict": true,
+		"noImplicitAny": true,
+		"strictNullChecks": true,
+		"strictFunctionTypes": true,
+		"strictBindCallApply": true,
+		"strictPropertyInitialization": false,
+		"noImplicitReturns": true,
+		"noImplicitThis": true,
+		"alwaysStrict": true,
+		"noUnusedLocals": true,
+		"noUnusedParameters": true,
+		"exactOptionalPropertyTypes": true,
+		"noImplicitOverride": true,
+		"noPropertyAccessFromIndexSignature": false,
+		"noUncheckedIndexedAccess": true,
+		"noFallthroughCasesInSwitch": true,
+
+		"isolatedModules": true,
+		"verbatimModuleSyntax": false,
+		"moduleDetection": "force",
+		"resolveJsonModule": true,
+		"allowImportingTsExtensions": false,
+		"noUncheckedSideEffectImports": true,
+
+		"skipLibCheck": true,
+		"incremental": true,
+		"tsBuildInfoFile": "./dist/.tsbuildinfo",
+
+		/* Decorators support pour les plugins Fastify */
+		"experimentalDecorators": true,
+		"emitDecoratorMetadata": true,
+
+		"pretty": true,
+		"preserveConstEnums": true,
+		"preserveValueImports": false
+	},
+
+	"include": ["src/**/*", "lib/**/*", "test/**/*", "*.config.*"],
+
+	"exclude": ["node_modules", "dist", "coverage", "**/*.spec.ts", "**/*.test.ts"],
+
+	"ts-node": {
+		"esm": true,
+		"experimentalSpecifierResolution": "node"
+	}
+}

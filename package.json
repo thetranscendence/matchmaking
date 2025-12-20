@@ -1,0 +1,51 @@
+{
+  "name": "template",
+  "version": "1.0.0",
+  "description": "",
+  "type": "module",
+  "main": "dist/src/index.js",
+  "scripts": {
+    "dev": "tsx watch src/index.ts",
+    "dev:original": "tsx watch original/index.ts",
+    "build": "tsc",
+    "test": "cross-env NODE_OPTIONS=--experimental-vm-modules jest",
+    "start": "node dist/src/index.js",
+    "prettier": "prettier --check .",
+    "format": "prettier --write .",
+    "socket": "tsx socket-client.ts"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "packageManager": "pnpm@10.17.1",
+  "devDependencies": {
+    "@types/better-sqlite3": "^7.6.13",
+    "@types/jest": "^29.5.14",
+    "@types/node": "^24.2.1",
+    "cross-env": "^10.0.0",
+    "jest": "^29.7.0",
+    "prettier": "^3.6.2",
+    "socket.io-client": "^4.8.1",
+    "ts-jest": "^29.2.5",
+    "tsx": "^4.20.3",
+    "typescript": "^5.9.2"
+  },
+  "dependencies": {
+    "@types/supertest": "^6.0.3",
+    "ajv": "^8.17.1",
+    "ajv-errors": "^3.0.0",
+    "better-sqlite3": "^12.2.0",
+    "fastify": "^5.4.0",
+    "fastify-plugin": "^5.0.1",
+    "my-class-validator": "workspace:*",
+    "my-fastify-decorators": "workspace:*",
+    "reflect-metadata": "^0.2.2",
+    "socket.io": "^4.8.1",
+    "supertest": "^7.1.4"
+  },
+  "pnpm": {
+    "onlyBuiltDependencies": [
+      "better-sqlite3"
+    ]
+  }
+}
