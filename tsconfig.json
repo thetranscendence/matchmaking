@@ -58,6 +58,7 @@
 		/* Decorators support pour les plugins Fastify */
 		"experimentalDecorators": true,
 		"emitDecoratorMetadata": true,
+		"useDefineForClassFields": false,
 
 		"pretty": true,
 		"preserveConstEnums": true,
