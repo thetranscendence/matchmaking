@@ -15,12 +15,11 @@ async function dbConnector(fastify: FastifyInstance) {
 	fastify.log.info('Initializing SQLite database plugin...');
 
 	// Définition des chemins: Utilisation de process.cwd() pour la racine de l'exécution
+	// Dans Docker avec pnpm --filter, le cwd est /app/apps/matchmaking
 	// Database file is stored in ./db/ directory (mounted as Docker volume for persistence)
 	const dbPath = process.env.DB_PATH || path.join(process.cwd(), 'db', 'db.sqlite');
 	// Schema SQL file is in ./data/ directory (part of the source code, not overwritten by volume)
-	const initSqlPath =
-		process.env.INIT_SQL_PATH ||
-		path.join(process.cwd(), 'apps', 'matchmaking', 'data', 'init.sql');
+	const initSqlPath = process.env.INIT_SQL_PATH || path.join(process.cwd(), 'data', 'init.sql');
 	const dbDir = path.dirname(dbPath);
 
 	fastify.log.debug({ dbPath, initSqlPath }, 'Resolved database paths');
