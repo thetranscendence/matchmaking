@@ -1,49 +1,58 @@
-import { ZodSchema } from 'zod';
+import Ajv from 'ajv';
+import ajvErrors from 'ajv-errors';
+
+// Instance AJV partagée pour la validation des résultats
+const ajv = new Ajv.default({ allErrors: true, $data: true, messages: true, coerceTypes: false });
+ajvErrors.default(ajv);
+
+// Cache pour les schémas compilés (évite la recompilation à chaque appel)
+const compiledSchemas = new WeakMap<object, Ajv.ValidateFunction>();
 
 /**
  * Décorateur pour valider automatiquement le résultat d'une méthode asynchrone
- * par rapport à un schéma Zod.
+ * par rapport à un schéma JSON Schema (généré via my-class-validator).
  *
  * Si la validation échoue, une erreur explicite est levée.
  * Cette erreur peut être capturée par un décorateur de résilience parent (ex: @Resilient).
  *
- * @param schema - Le schéma Zod à appliquer sur la valeur de retour.
+ * @param schema - Le schéma JSON Schema à appliquer sur la valeur de retour.
  */
-export function ValidateResult(schema: ZodSchema) {
-  return function (
-    target: any,
-    propertyKey: string,
-    descriptor: PropertyDescriptor
-  ) {
-    const originalMethod = descriptor.value;
+export function ValidateResult(schema: object) {
+	return function (target: any, propertyKey: string, descriptor: PropertyDescriptor) {
+		const originalMethod = descriptor.value;
 
-    descriptor.value = async function (...args: any[]) {
-      const methodName = propertyKey;
-      const context = target.constructor.name; // Ex: 'UserService'
+		descriptor.value = async function (...args: any[]) {
+			const methodName = propertyKey;
+			const context = target.constructor.name; // Ex: 'UserService'
 
-      // 1. Exécution de la méthode originale (récupération des données brutes)
-      const result = await originalMethod.apply(this, args);
+			// 1. Exécution de la méthode originale (récupération des données brutes)
+			const result = await originalMethod.apply(this, args);
 
-      // 2. Validation des données
-      const validation = schema.safeParse(result);
+			// 2. Compilation du schéma (avec cache)
+			let validate = compiledSchemas.get(schema);
+			if (!validate) {
+				validate = ajv.compile(schema);
+				compiledSchemas.set(schema, validate);
+			}
 
-      if (!validation.success) {
-        console.warn(
-          `[ValidateResult] [${context}] [${methodName}] Validation Failed | Issues: ${JSON.stringify(validation.error.issues)}`
-        );
-        // On lève une erreur pour signaler que le contrat d'interface n'est pas respecté.
-        // Cela permet aux mécanismes de fallback (ex: @Resilient) de prendre le relais.
-        throw new Error(`Data validation failed for ${methodName}`);
-      }
+			// 3. Validation des données
+			const isValid = validate(result);
 
-      console.debug(
-        `[ValidateResult] [${context}] [${methodName}] Validation Success.`
-      );
+			if (!isValid) {
+				console.warn(
+					`[ValidateResult] [${context}] [${methodName}] Validation Failed | Issues: ${JSON.stringify(validate.errors)}`,
+				);
+				// On lève une erreur pour signaler que le contrat d'interface n'est pas respecté.
+				// Cela permet aux mécanismes de fallback (ex: @Resilient) de prendre le relais.
+				throw new Error(`Data validation failed for ${methodName}`);
+			}
 
-      // 3. Retourne les données validées (et potentiellement transformées/nettoyées par Zod)
-      return validation.data;
-    };
+			console.debug(`[ValidateResult] [${context}] [${methodName}] Validation Success.`);
 
-    return descriptor;
-  };
+			// 3. Retourne les données validées
+			return result;
+		};
+
+		return descriptor;
+	};
 }
