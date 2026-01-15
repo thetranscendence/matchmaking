@@ -72,10 +72,14 @@ export class MatchmakingGateway {
 	 * @param server - L'instance du serveur Socket.io
 	 */
 	public afterInit(server: Server): void {
-		console.info('[MatchmakingGateway] [afterInit] WebSocket Gateway initialized.');
+		console.info('[MatchmakingGateway] [afterInit] WebSocket Gateway initialized.', {
+			hasServer: !!server,
+			hasMatchmakingService: !!this.matchmakingService,
+		});
 
 		if (this.matchmakingService) {
 			this.matchmakingService.setServer(server);
+			console.info('[MatchmakingGateway] [afterInit] Server successfully set on MatchmakingService');
 		} else {
 			console.error(
 				'[MatchmakingGateway] [afterInit] CRITICAL: MatchmakingService is not available during init.',

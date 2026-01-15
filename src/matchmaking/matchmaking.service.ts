@@ -65,6 +65,10 @@ export class MatchmakingService implements OnModuleInit, OnModuleDestroy {
 
 	public setServer(server: Server) {
 		this.server = server;
+		console.info('[MatchmakingService] [setServer] Server instance set successfully', {
+			hasServer: !!server,
+			hasSockets: !!(server && server.sockets),
+		});
 	}
 
 	/**
@@ -107,6 +111,7 @@ export class MatchmakingService implements OnModuleInit, OnModuleDestroy {
 			console.info(`[MatchmakingService] [addPlayer] PRIORITY PLAYER ADDED: ${userId}`);
 		}
 
+		console.info(`[MatchmakingService] [addPlayer] Emitting queue stats: ${JSON.stringify(this.getQueueStats())}`);
 		this.emitQueueStats();
 	}
 
@@ -588,8 +593,10 @@ export class MatchmakingService implements OnModuleInit, OnModuleDestroy {
 	}
 
 	private emitQueueStats(): void {
+		const stats = this.getQueueStats();
 		if (this.server) {
-			this.server.emit('queue_stats', this.getQueueStats());
+			console.info(`[MatchmakingService] [emitQueueStats] Emitting queue stats: ${JSON.stringify(stats)}`);
+			this.server.sockets.emit('queue_stats', stats);
 		}
 	}
 }
