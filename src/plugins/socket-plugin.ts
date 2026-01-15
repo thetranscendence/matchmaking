@@ -3,6 +3,7 @@ import fp from 'fastify-plugin';
 import { Server, ServerOptions } from 'socket.io';
 
 const opts: Partial<ServerOptions> = {
+	path: '/',
 	cors: {
 		origin: '*',
 	},
