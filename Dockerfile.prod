@@ -50,16 +50,18 @@ LABEL org.opencontainers.image.authors="ft_transcendence team"
 # Créer un utilisateur non-root
 RUN addgroup -g 1001 appgroup && adduser -u 1001 -G appgroup -s /bin/sh -D appuser
 
-WORKDIR /app
+WORKDIR /app/apps/matchmaking
 
 # Copie des artefacts du builder
-COPY --from=builder --chown=appuser:appgroup /app/node_modules ./node_modules
-COPY --from=builder --chown=appuser:appgroup /app/packages ./packages
-COPY --from=builder --chown=appuser:appgroup /app/apps/matchmaking/dist ./apps/matchmaking/dist
-COPY --from=builder --chown=appuser:appgroup /app/apps/matchmaking/package.json ./apps/matchmaking/
+COPY --from=builder --chown=appuser:appgroup /app/node_modules /app/node_modules
+COPY --from=builder --chown=appuser:appgroup /app/packages /app/packages
+COPY --from=builder --chown=appuser:appgroup /app/apps/matchmaking/dist ./dist
+COPY --from=builder --chown=appuser:appgroup /app/apps/matchmaking/package.json ./
+COPY --from=builder --chown=appuser:appgroup /app/apps/matchmaking/node_modules ./node_modules
+COPY --from=builder --chown=appuser:appgroup /app/apps/matchmaking/data ./data
 
 # Créer le dossier db avec les bonnes permissions
-RUN mkdir -p /app/apps/matchmaking/db && chown -R appuser:appgroup /app/apps/matchmaking/db
+RUN mkdir -p db && chown -R appuser:appgroup db
 
 # Variables d'environnement
 ENV NODE_ENV=production
@@ -70,6 +72,6 @@ USER appuser
 EXPOSE 3000
 
 HEALTHCHECK --interval=30s --timeout=10s --start-period=30s --retries=3 \
-    CMD wget --no-verbose --tries=1 --spider http://localhost:3000/health || exit 1
+    CMD wget --no-verbose --tries=1 --spider http://127.0.0.1:3000/health || exit 1
 
-CMD ["node", "apps/matchmaking/dist/src/index.js"]
+CMD ["node", "dist/src/index.js"]
